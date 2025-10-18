@@ -19,7 +19,7 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
     { name: 'Tentang', href: '#about' },
     { name: 'Visi & Misi', href: '#vision' },
     { name: 'Program Kerja', href: '#programs' },
-    { name: 'Galeri', href: '#gallery' },
+    { name: 'Galeri', href: '#organization' },
     { name: 'Berita', href: '#news' },
     { name: 'Kontak', href: '#contact' },
   ];
@@ -162,3 +162,4 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
     </header>
   );
 }
+
