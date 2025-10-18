@@ -65,7 +65,7 @@ export default function Hero() {
             <Button 
               variant="outline" 
               size="lg"
-              onClick={() => document.querySelector('#gallery')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.querySelector('#organization')?.scrollIntoView({ behavior: 'smooth' })}
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold rounded-full"
             >
               Lihat Galeri
@@ -79,3 +79,4 @@ export default function Hero() {
     </section>
   );
 }
+
