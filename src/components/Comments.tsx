@@ -1,22 +1,18 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { MessageCircle, Send, Trash2, User } from 'lucide-react';
 import { useFirebase } from '@/hooks/useFirebase';
 import { useAuth } from '@/hooks/useAuth';
+import { motion } from 'framer-motion';
 
 export default function Comments() {
   const { comments, addComment, deleteComment } = useFirebase();
   const { isAdmin } = useAuth();
-  const [formData, setFormData] = useState({
-    name: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState({ name: '', message: '' });
 
-  // Default comments untuk demo
   const defaultComments = [
     {
       id: '1',
@@ -37,13 +33,8 @@ export default function Comments() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.message) return;
-
     try {
-      await addComment({
-        name: formData.name,
-        message: formData.message
-      });
-
+      await addComment({ name: formData.name, message: formData.message });
       setFormData({ name: '', message: '' });
       alert('Komentar berhasil dikirim!');
     } catch (error) {
@@ -57,9 +48,21 @@ export default function Comments() {
     }
   };
 
+  // Framer Motion Variants
+  const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } },
+  };
+
+  const commentVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  };
+
   return (
     <section id="contact" className="py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
             Komentar & <span className="golden-text">Masukan</span>
@@ -75,12 +78,6 @@ export default function Comments() {
           {/* Comment Form */}
           <div className="lg:col-span-1">
             <Card className="sticky top-24">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MessageCircle className="w-5 h-5 text-primary" />
-                  <span>Tulis Komentar</span>
-                </CardTitle>
-              </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
@@ -102,9 +99,8 @@ export default function Comments() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full golden-gradient text-white hover:opacity-90">
-                    <Send className="w-4 h-4 mr-2" />
-                    Kirim Komentar
+                  <Button type="submit" className="w-full golden-gradient text-white hover:opacity-90 flex items-center justify-center">
+                    <Send className="w-4 h-4 mr-2" /> Kirim Komentar
                   </Button>
                 </form>
               </CardContent>
@@ -112,49 +108,59 @@ export default function Comments() {
           </div>
 
           {/* Comments Display */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2">
             {displayComments.length > 0 ? (
-              <div className="space-y-4">
+              <motion.div
+                className="space-y-4"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {displayComments.map((comment) => (
-                  <Card key={comment.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="w-8 h-8 golden-gradient rounded-full flex items-center justify-center">
-                              <User className="w-4 h-4 text-white" />
-                            </div>
-                            <div>
-                              <span className="font-semibold">{comment.name}</span>
-                              <p className="text-sm text-muted-foreground">
-                                {comment.createdAt.toLocaleDateString('id-ID', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric'
-                                })}
-                              </p>
-                            </div>
+                  <motion.div key={comment.id} variants={commentVariants}>
+                    <Card className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-start space-x-4">
+                          {/* Avatar */}
+                          <div className="w-10 h-10 golden-gradient rounded-full flex items-center justify-center flex-shrink-0">
+                            <User className="w-5 h-5 text-white" />
                           </div>
-                          <p className="text-muted-foreground leading-relaxed ml-10">
-                            {comment.message}
-                          </p>
-                        </div>
 
-                        {isAdmin && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDelete(comment.id)}
-                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                          {/* Content */}
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="font-semibold">{comment.name}</span>
+                                <p className="text-xs text-muted-foreground">
+                                  {comment.createdAt.toLocaleDateString('id-ID', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                  })}
+                                </p>
+                              </div>
+                              {isAdmin && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleDelete(comment.id)}
+                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+
+                            <p className="text-muted-foreground mt-2 leading-relaxed">
+                              {comment.message}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
@@ -162,9 +168,7 @@ export default function Comments() {
                   <h4 className="text-lg font-semibold text-muted-foreground mb-2">
                     Belum ada komentar
                   </h4>
-                  <p className="text-muted-foreground">
-                    Jadilah yang pertama memberikan komentar!
-                  </p>
+                  <p className="text-muted-foreground">Jadilah yang pertama memberikan komentar!</p>
                 </CardContent>
               </Card>
             )}
