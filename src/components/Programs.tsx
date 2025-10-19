@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Save, X, Plus } from 'lucide-react';
+import { Edit, Save, X, Plus, Trash2 } from 'lucide-react';
 import { useFirebase } from '@/hooks/useFirebase';
 import { useAuth } from '@/hooks/useAuth';
 import { ProgramItem } from '@/lib/types';
 
 export default function Programs() {
-  const { programs, updateProgram, addProgramSie } = useFirebase();
+  const { programs, updateProgram, addProgramSie, deleteProgramSie } = useFirebase();
   const { isAdmin } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<ProgramItem>>({});
@@ -46,13 +46,8 @@ export default function Programs() {
     setEditData({});
   };
 
-  const addProgramItem = (isNew = false) => {
-    if (isNew) {
-      setNewSieData({
-        ...newSieData,
-        programs: [...(newSieData.programs || []), '']
-      });
-    } else if (editData.programs) {
+  const addProgramItem = () => {
+    if (editData.programs) {
       setEditData({
         ...editData,
         programs: [...editData.programs, '']
@@ -60,23 +55,16 @@ export default function Programs() {
     }
   };
 
-  const updateProgramItem = (index: number, value: string, isNew = false) => {
-    if (isNew) {
-      const newPrograms = [...(newSieData.programs || [])];
-      newPrograms[index] = value;
-      setNewSieData({ ...newSieData, programs: newPrograms });
-    } else if (editData.programs) {
+  const updateProgramItem = (index: number, value: string) => {
+    if (editData.programs) {
       const newPrograms = [...editData.programs];
       newPrograms[index] = value;
       setEditData({ ...editData, programs: newPrograms });
     }
   };
 
-  const removeProgramItem = (index: number, isNew = false) => {
-    if (isNew) {
-      const newPrograms = (newSieData.programs || []).filter((_, i) => i !== index);
-      setNewSieData({ ...newSieData, programs: newPrograms });
-    } else if (editData.programs) {
+  const removeProgramItem = (index: number) => {
+    if (editData.programs) {
       const newPrograms = editData.programs.filter((_, i) => i !== index);
       setEditData({ ...editData, programs: newPrograms });
     }
@@ -134,11 +122,37 @@ export default function Programs() {
                           <Button size="sm" variant="outline" onClick={handleCancel} className="h-8 w-8 p-0">
                             <X className="w-4 h-4" />
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={async () => {
+                              if (confirm(`Apakah Anda yakin ingin menghapus sie "${program.sieName}"?`)) {
+                                await deleteProgramSie(program.id);
+                              }
+                            }}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </>
                       ) : (
-                        <Button size="sm" variant="ghost" onClick={() => handleEdit(program)} className="h-8 w-8 p-0">
-                          <Edit className="w-4 h-4" />
-                        </Button>
+                        <>
+                          <Button size="sm" variant="ghost" onClick={() => handleEdit(program)} className="h-8 w-8 p-0">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={async () => {
+                              if (confirm(`Apakah Anda yakin ingin menghapus sie "${program.sieName}"?`)) {
+                                await deleteProgramSie(program.id);
+                              }
+                            }}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   )}
@@ -154,14 +168,16 @@ export default function Programs() {
                   <p className="text-muted-foreground mt-2 leading-relaxed">{program.description}</p>
                 )}
               </CardHeader>
+
               <CardContent>
                 <div className="space-y-3">
                   <h4 className="font-semibold text-foreground flex items-center justify-between">
                     Program Kerja:
-                    <Button size="sm" variant="outline" onClick={() => addProgramItem(editingId !== null)} className="h-8">
-                      <Plus className="w-4 h-4 mr-1" />
-                      Tambah
-                    </Button>
+                    {isAdmin && editingId === program.id && (
+                      <Button size="sm" variant="outline" onClick={addProgramItem} className="h-8">
+                        <Plus className="w-4 h-4 mr-1" /> Tambah
+                      </Button>
+                    )}
                   </h4>
                   <div className="space-y-2">
                     {editingId === program.id
@@ -215,22 +231,38 @@ export default function Programs() {
                 <div className="space-y-2">
                   <h4 className="font-semibold text-foreground flex items-center justify-between">
                     Program Kerja:
-                    <Button size="sm" variant="outline" onClick={() => addProgramItem(true)} className="h-8">
-                      <Plus className="w-4 h-4 mr-1" />
-                      Tambah
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setNewSieData({
+                          ...newSieData,
+                          programs: [...(newSieData.programs || []), '']
+                        });
+                      }}
+                      className="h-8"
+                    >
+                      <Plus className="w-4 h-4 mr-1" /> Tambah
                     </Button>
                   </h4>
                   {(newSieData.programs || []).map((item, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <Input
                         value={item}
-                        onChange={(e) => updateProgramItem(index, e.target.value, true)}
+                        onChange={(e) => {
+                          const newPrograms = [...(newSieData.programs || [])];
+                          newPrograms[index] = e.target.value;
+                          setNewSieData({ ...newSieData, programs: newPrograms });
+                        }}
                         className="flex-1"
                       />
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => removeProgramItem(index, true)}
+                        onClick={() => {
+                          const newPrograms = (newSieData.programs || []).filter((_, i) => i !== index);
+                          setNewSieData({ ...newSieData, programs: newPrograms });
+                        }}
                         className="h-8 w-8 p-0"
                       >
                         <X className="w-4 h-4" />
