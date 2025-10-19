@@ -1,30 +1,29 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, Heart, Star, Globe } from 'lucide-react';
-import ft1 from '@/assets/ft1.jpg'; // import statis gambar
+import ft1 from '@/assets/ft1.jpg';
+import { motion } from 'framer-motion';
 
 export default function About() {
   const features = [
-    {
-      icon: Users,
-      title: 'Komunitas Solid',
-      description: 'Terdiri dari individu-individu yang memiliki passion tinggi terhadap pelestarian budaya Indonesia.'
-    },
-    {
-      icon: Heart,
-      title: 'Dedikasi Tinggi',
-      description: 'Berkomitmen penuh dalam setiap kegiatan pelestarian dan pengembangan budaya nusantara.'
-    },
-    {
-      icon: Star,
-      title: 'Prestasi Gemilang',
-      description: 'Telah meraih berbagai penghargaan dalam bidang pelestarian dan promosi budaya Indonesia.'
-    },
-    {
-      icon: Globe,
-      title: 'Jangkauan Luas',
-      description: 'Aktif dalam berbagai kegiatan lokal, nasional, dan internasional untuk memperkenalkan budaya Indonesia.'
-    }
+    { icon: Users, title: 'Komunitas Solid', description: 'Terdiri dari individu-individu yang memiliki passion tinggi terhadap pelestarian budaya Indonesia.' },
+    { icon: Heart, title: 'Dedikasi Tinggi', description: 'Berkomitmen penuh dalam setiap kegiatan pelestarian dan pengembangan budaya nusantara.' },
+    { icon: Star, title: 'Prestasi Gemilang', description: 'Telah meraih berbagai penghargaan dalam bidang pelestarian dan promosi budaya Indonesia.' },
+    { icon: Globe, title: 'Jangkauan Luas', description: 'Aktif dalam berbagai kegiatan lokal, nasional, dan internasional untuk memperkenalkan budaya Indonesia.' }
   ];
+
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  };
 
   return (
     <section id="about" className="py-20 bg-muted/30">
@@ -82,23 +81,31 @@ export default function About() {
         </div>
 
         {/* Fitur */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           {features.map((feature, index) => (
-            <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 golden-gradient rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h4 className="text-lg font-semibold mb-3 text-foreground">
-                  {feature.title}
-                </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div key={index} variants={cardVariants}>
+              <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 golden-gradient rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold mb-3 text-foreground">
+                    {feature.title}
+                  </h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
