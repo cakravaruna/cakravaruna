@@ -65,10 +65,10 @@ export default function Hero() {
             <Button 
               variant="outline" 
               size="lg"
-              onClick={() => document.querySelector('#organization')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.querySelector('#news')?.scrollIntoView({ behavior: 'smooth' })}
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold rounded-full"
             >
-              Lihat Galeri
+              Lihat Berita
             </Button>
           </div>
         </div>
@@ -79,4 +79,5 @@ export default function Hero() {
     </section>
   );
 }
+
 
