@@ -40,7 +40,7 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="text-xl font-bold golden-text">Kader Budaya</h3>
-                <p className="text-sm text-muted-foreground">Indonesia</p>
+                <p className="text-sm text-muted-foreground">Cakravaruna</p>
               </div>
             </div>
             <p className="text-muted-foreground leading-relaxed">
@@ -114,3 +114,4 @@ export default function Footer() {
     </footer>
   );
 }
+
