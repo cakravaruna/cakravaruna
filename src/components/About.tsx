@@ -35,7 +35,7 @@ export default function About() {
           </h2>
           <div className="w-24 h-1 golden-gradient mx-auto mb-8"></div>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Kader Budaya Indonesia adalah organisasi yang didedikasikan untuk melestarikan, 
+            Kader Budaya Cakravaruna adalah organisasi yang didedikasikan untuk melestarikan, 
             mengembangkan, dan mempromosikan kekayaan budaya nusantara kepada generasi muda 
             dan masyarakat luas.
           </p>
@@ -110,3 +110,4 @@ export default function About() {
     </section>
   );
 }
+
